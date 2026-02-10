@@ -31,20 +31,20 @@ users.forEach(user=>{
 
 userSelect.addEventListener("change", function(){
   const selectedUser = userSelect.value;
-  const userData= getData(selectedUser);   // STEP 2: Get that user's data from localStorage (storage)
+  const userData = getData(selectedUser);   // STEP 2: Get that user's data from localStorage (storage)
 
-  const bookmarks= userData?.bookmarks || [];   // STEP 3: Extract the bookmarks array from userData
+  const bookmarks = userData?.bookmarks || [];   // STEP 3: Extract the bookmarks array from userData
 
 
 const bookmarkContainer = document.getElementByID("bookmarkContainer");   // STEP 4: Get the HTML container where we'll display bookmarks
 
-bookmarkContainer.innerHTML ="";   // STEP 5: Clear any old bookmarks that were displayed before
+bookmarkContainer.innerHTML = "";   // STEP 5: Clear any old bookmarks that were displayed before
 
   // STEP 6: Check if user has any bookmarks
 
-if(bookmarks.length>0){
+if(bookmarks.length > 0){
 
-  bookmarks.forEach(bookmark=> {
+  bookmarks.forEach(bookmark => {
 
     const bookmarkDiv = document.createElement("div");               // Create a div container for THIS bookmark (holds all its parts together)
 
@@ -52,7 +52,7 @@ if(bookmarks.length>0){
 
     const link = document.createElement("a");       // Create a link element
 
-    link.href=bookmark.url;        // Set the link's URL to the bookmark's URL
+    link.href = bookmark.url;        // Set the link's URL to the bookmark's URL
 
     link.textContent = bookmark.title;       // Set the link's text to the bookmark's title
 
@@ -63,7 +63,7 @@ if(bookmarks.length>0){
             // Create and add the description
 
     const description = document.createElement("p");
-    description.textContent= bookmark.description;
+    description.textContent = bookmark.description;
     bookmarkContainer.appendChild(bookmarkDiv);
 
   });
@@ -73,7 +73,7 @@ if(bookmarks.length>0){
 
   const message= document.createElement("p");     // Create a paragraph for the message
 
-  message.textContent= "No bookmark found for this user";   // Set the message text
+  message.textContent = "No bookmark found for this user";   // Set the message text
 
   bookmarkContainer.appendChild(message); // Add the message to the container
 }
