@@ -93,10 +93,4 @@ small {
   color: #555;
 }
 
-/* Empty state message */
-#bookmarks:empty::before {
-  content: "No bookmarks yet.";
-  display: block;
-  font-style: italic;
-  color: #555;
-}
+

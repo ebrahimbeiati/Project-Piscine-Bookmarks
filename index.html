@@ -6,30 +6,34 @@
     <link rel="stylesheet" href="index.css" />
   </head>
   <body>
-
-    <h1> Project: Shared Bookmarks</h1>
+    <h1>Shared Bookmarks</h1>
+    <p id="userCount"></p>
 
     <label for="users">Users</label>
     <select id="users"></select>
 
-    <p id="userCount"></p>
+    <section id="bookmarkContainer"></section>
 
-    <section id="bookmarks"></section>
-    
+    <h2>Add bookmark</h2>
     <form id="bookmarkForm">
       <div>
         <label for="title">Title</label>
-        <input type ="text" id="title" name="title" required>
+        <input type="text" id="title" name="title" required />
       </div>
 
       <div>
         <label for="url">URL</label>
-        <input type="url" id="url" name="url" required>
+        <input type="url" id="url" name="url" required />
       </div>
-      
+
       <div>
         <label for="description">Description</label>
-        <textarea id="description" name="description" rows="3" required></textarea>
+        <textarea
+          id="description"
+          name="description"
+          rows="3"
+          required
+        ></textarea>
       </div>
 
       <button type="submit">Add bookmark</button>
