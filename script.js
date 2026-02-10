@@ -25,9 +25,13 @@ users.forEach(user=>{
   option.textContent = user;
   option.value= user;
   userSelect.appendChild(option);
+});
+
+userSelect.addEventListener("change", function(){
+  
 })
 };
 
 
-// i will wrtie comments for ebrahim's code
-// noted!
+
+
