@@ -29,4 +29,4 @@ users.forEach(user=>{
 };
 // You can also access functions defined in this file from other files, as long as you export them. For example, if you wanted to export a function called "myFunction", you would add the following line at the end of this file
 
-// i will wrtie comments for ebrahim's code
+// i will write comments for ebrahim's code
