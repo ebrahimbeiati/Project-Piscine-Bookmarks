@@ -94,3 +94,24 @@ small {
 }
 
 
+#bookmarkContainer div {
+  border: 1px solid #ccc;
+  padding: 12px;
+  margin: 12px 0;
+  border-radius: 6px;
+  background: #f9f9f9;
+}
+
+#bookmarkContainer button {
+  padding: 6px 12px;
+  margin-top: 8px;
+  background-color: #007bff;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+#bookmarkContainer button:hover {
+  background-color: #0056b3;
+}

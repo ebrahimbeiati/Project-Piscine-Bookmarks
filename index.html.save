@@ -1,0 +1,46 @@
+grep -n '<<<<<<<\|=======\|>>>>>>>' index.html<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Shared Bookmarks</title>
+    <link rel="stylesheet" href="index.css" />
+  </head>
+  <body>
+    <h1>Shared Bookmarks</h1>
+    <p id="userCount"></p>
+
+    <label for="users">Users</label>
+    <select id="users"></select>
+
+    <section id="bookmarkContainer"></section>
+
+
+    <form id="bookmarkForm">
+      <div>
+        <label for="title">Title</label>
+        <input type="text" id="title" name="title" required />
+      </div>
+
+      <div>
+        <label for="url">URL</label>
+        <input type="url" id="url" name="url" required />
+      </div>
+
+      <div>
+        <label for="description">Description</label>
+        <textarea
+          id="description"
+          name="description"
+          rows="3"
+          required
+        ></textarea>
+      </div>
+
+      <button type="submit">Add bookmark</button>
+    </form>
+    <script type="module" src="script.js"></script>
+  </body>
+</html>
+git add index.html
+
+

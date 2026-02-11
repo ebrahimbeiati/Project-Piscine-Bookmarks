@@ -31,6 +31,7 @@ window.onload = function () {
 
   userSelect.addEventListener("change", function () {
     const selectedUser = userSelect.value;
+    
     const userData = getData(selectedUser); // STEP 2: Get that user's data from localStorage (storage)
 
     const bookmarks = userData?.bookmarks || []; // STEP 3: Extract the bookmarks array from userData
@@ -42,6 +43,7 @@ window.onload = function () {
     // STEP 6: Check if user has any bookmarks
 
     if (bookmarks.length > 0) {
+      
       bookmarks.forEach((bookmark) => {
         const bookmarkDiv = document.createElement("div"); // Create a div container for THIS bookmark (holds all its parts together)
 
