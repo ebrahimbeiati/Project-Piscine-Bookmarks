@@ -112,4 +112,42 @@ window.onload = function () {
       bookmarkContainer.appendChild(message); // Add the message to the container
     }
   });
+
+  const form = document.getElementById("bookmarkForm");
+  form.addEventListener("submit", function (event) {
+    event.preventDefault(); // stop page refresh
+
+    // get what users typed in the form
+    const title = document.getElementById("title").value;
+    const url = document.getElementById("url").value;
+    const description = document.getElementById("description").value;
+
+    // package it into a bookmark object
+    const newBookmark = {
+      title,
+      url,
+      description,
+      createdAt : new Date().toISOString(),
+    };
+        // Find out which user should get this bookmark
+  const currentUser = userSelect.value;
+
+  // get the user's existing data
+  const userData = getData(currentUser) || {};
+
+  // extract bookmarks (or use empty array if none exist)
+  const bookmarks = userData?.bookmarks || [];
+  
+  //add the new bookmark
+  bookmarks.push(newBookmark);
+
+  // save updated data back to storage
+  userData.bookmarks = bookmarks;
+  setData(currentUser, userData);
+
+  //reset form
+  form.reset();
+   // re-render bookmarks for this user
+   userSelect.dispatchEvent(new Event("change"));
+  });
 };
