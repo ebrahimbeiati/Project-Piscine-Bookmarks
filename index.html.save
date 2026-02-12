@@ -1,4 +1,4 @@
-<!doctype html>
+grep -n '<<<<<<<\|=======\|>>>>>>>' index.html<!doctype html>
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
@@ -14,7 +14,7 @@
 
     <section id="bookmarkContainer"></section>
 
-    <h2>Add bookmark</h2>
+
     <form id="bookmarkForm">
       <div>
         <label for="title">Title</label>
@@ -41,3 +41,6 @@
     <script type="module" src="script.js"></script>
   </body>
 </html>
+git add index.html
+
+
