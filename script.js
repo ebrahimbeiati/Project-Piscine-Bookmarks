@@ -4,150 +4,175 @@
 // Note that when running locally, in order to open a web page which uses modules, you must serve the directory over HTTP e.g. with https://www.npmjs.com/package/http-server
 // You can't open the index.html file using a file:// URL.
 
-import { getUserIds, getData , setData} from "./storage.js";
+import { getUserIds, getData, setData } from "./storage.js";
+import { incrementLikes, sortedByNewest } from './utils.js';
 
-window.onload = function () {
+// DOM elements
+const userSelect = document.getElementById("users");
+const bookmarkSection = document.getElementById("bookmarkContainer");
+const form = document.getElementById("bookmarkForm");
+const urlInput = document.getElementById("url");
+const titleInput = document.getElementById("title");
+const descriptionInput = document.getElementById("description");
+const userCount = document.getElementById("userCount");
+
+// KEY FOR STORING CURRENT USER
+const CURRENT_USER_KEY = "currentUserId";
+let currentUserId = null;
+
+// Save/ load current user to/ from localStorage
+function saveCurrentUser(userId) {
+  localStorage.setItem(CURRENT_USER_KEY, userId);
+}
+
+// Load current user from localStorage
+function loadCurrentUser() {
+  return localStorage.getItem(CURRENT_USER_KEY);
+}
+
+// Load users into the dropdown menu
+function loadUsers() {
   const users = getUserIds();
-  document.querySelector("#userCount").innerText =
-    `There are ${users.length} users`;
+   userSelect.innerHTML = "";
 
-  const userSelect = document.getElementById("users"); // STEP 1: Get which user was selected
-
+  // Add default placeholder option first
   const defaultOption = document.createElement("option");
-  defaultOption.textContent = "Select a user";
   defaultOption.value = "";
+  defaultOption.textContent = "Select a user";
   defaultOption.disabled = true;
   defaultOption.selected = true;
-
   userSelect.appendChild(defaultOption);
 
-  users.forEach((user) => {
+  // Add user options
+  users.forEach((id) => {
     const option = document.createElement("option");
-    //  User IDs in Dropdown
-    option.textContent = `User ${user}`; // Shows "User 1", "User 2"
-    option.value = user; // Value is "1", "2", "3"
+    option.value = id;
+    option.textContent = `User ${id}`;
     userSelect.appendChild(option);
   });
+  // Reset current user
+  currentUserId = null;
+  userSelect.value = ""; // ensures placeholder is selected
 
-  userSelect.addEventListener("change", function () {
-    const selectedUser = userSelect.value;
+  // Update user count
+  userCount.textContent = `Total users: ${users.length}`;
+
+}
+// Display the bookmarks for the current user
+function displayBookmarks() {
+  bookmarkSection.innerHTML = "";
+  const data = getData(currentUserId) || [];
+  
+  // If there are no bookmarks, display a message
+  if (data.length === 0) {
+    const message = document.createElement("p");
+    message.textContent = `No bookmarks yet for User ${currentUserId}`;
+    message.setAttribute("role", "status");
+    message.setAttribute("aria-live", "polite");
+    bookmarkSection.appendChild(message);
+    return;
+  }
+  
+  const sorted = sortedByNewest(data);
+  sorted.forEach((bookmark, index) => {
+    const article = document.createElement("article");
+    article.className = "bookmark";
     
-    const userData = getData(selectedUser); // STEP 2: Get that user's data from localStorage (storage)
+    const title = document.createElement("h3");
+    const label = document.createTextNode("Title: ");
+    const link = document.createElement("a");
+    link.href = bookmark.url;
+    link.textContent = bookmark.title;
+    link.target = "_blank";
+    link.rel = "noopener noreferrer";
+    title.append(label, link);
+    
 
-    const bookmarks = userData?.bookmarks || []; // STEP 3: Extract the bookmarks array from userData
-
-    const bookmarkContainer = document.getElementById("bookmarkContainer"); // STEP 4: Get the HTML container where we'll display bookmarks
-
-    bookmarkContainer.innerHTML = ""; // STEP 5: Clear any old bookmarks that were displayed before
-
-    // STEP 6: Check if user has any bookmarks
-
-    if (bookmarks.length > 0) {
-      
-      bookmarks.forEach((bookmark) => {
-        const bookmarkDiv = document.createElement("div"); // Create a div container for THIS bookmark (holds all its parts together)
-
-        // Create and add the title as a clickable link
-
-        const link = document.createElement("a"); // Create a link element
-
-        link.href = bookmark.url; // Set the link's URL to the bookmark's URL
-
-        link.textContent = bookmark.title; // Set the link's text to the bookmark's title
-
-        bookmarkDiv.appendChild(link); //Add link to the bookmark div
-
-        // Create and add the description
-
-        const description = document.createElement("p");
-        description.textContent = bookmark.description;
-        bookmarkDiv.appendChild(description);
-
-        // Create and add the timestamp
-
-        const timestamp = document.createElement("p");
-        timestamp.textContent = `Created: ${bookmark.createdAt}`;
-        bookmarkDiv.appendChild(timestamp);
-      
-
-      const copyButton = document.createElement("button");
-      copyButton.textContent = "Copy to clipboard";
-
-      // Add click event - when button is clicked
-      copyButton.addEventListener("click", function () {
-        // Copy the URL to clipboard
-        navigator.clipboard.writeText(bookmark.url);
-      });
-        bookmarkDiv.appendChild(copyButton);
-      
-
-      // create and add the like counter display
-      let currentLikes = 0;
-      const likeCount = document.createElement("p");
-      likeCount.textContent = "Like: 0";
-      bookmarkDiv.appendChild(likeCount);
-
-      //create and add the like button
-
-      const likeButton = document.createElement("button");
-      likeButton.textContent = "Like";
-
-      likeButton.addEventListener("click", function() {
-        currentLikes++;  // increaseCurrentLikes
-        likeCount.textContent = `Likes: ${currentLikes}`; // updates current likes
-      })
-      bookmarkDiv.appendChild(likeButton);
-
-      // Add this complete bookmark div to the main container
-      bookmarkContainer.appendChild(bookmarkDiv);
+    const description = document.createElement("p");
+    
+    description.textContent =  "Description: " + bookmark.description;
+    
+    const time = document.createElement("time");
+    time.dateTime = new Date(bookmark.createdAt).toISOString();
+    time.textContent = `Created: ${new Date(bookmark.createdAt).toLocaleString()}`;
+    
+    // Copy button with accessible label
+    const copyBtn = document.createElement("button");
+    copyBtn.textContent = "Copy URL";
+    copyBtn.type = "button";
+    copyBtn.setAttribute("aria-label", `Copy URL for ${bookmark.title}`);
+    copyBtn.addEventListener("click", async () => {
+      try {
+        await navigator.clipboard.writeText(bookmark.url);
+        copyBtn.textContent = "Copied!";
+        setTimeout(() => {
+          copyBtn.textContent = "Copy URL";
+        }, 2000);
+      } catch (err) {
+        console.error("Failed to copy:", err);
+        copyBtn.textContent = "Copy failed";
+      }
     });
     
-    } else {
-      // User has NO bookmarks - show a message
-
-      const message = document.createElement("p"); // Create a paragraph for the message
-
-      message.textContent = "No bookmark found for this user"; // Set the message text
-
-      bookmarkContainer.appendChild(message); // Add the message to the container
-    }
+    // Like button with accessible label
+    const likeBtn = document.createElement("button");
+    likeBtn.type = "button";
+    const likes = bookmark.likes || 0;
+    likeBtn.textContent = `❤️ ${likes}`;
+    likeBtn.setAttribute("aria-label", `Like this bookmark. Current likes: ${likes}`);
+    likeBtn.addEventListener("click", () => {
+      const updated = incrementLikes(bookmark);
+      data[index] = updated;
+      setData(currentUserId, data);
+      displayBookmarks();
+    });
+    
+    const buttonContainer = document.createElement("div");
+    buttonContainer.className = "bookmark-actions";
+    buttonContainer.append(copyBtn, likeBtn);
+    
+    article.append(title, description, time, buttonContainer);
+    bookmarkSection.append(article);
   });
+}
 
-  const form = document.getElementById("bookmarkForm");
-  form.addEventListener("submit", function (event) {
-    event.preventDefault(); // stop page refresh
+// Handle user change event
+userSelect.addEventListener("change", (event) => {
+  currentUserId = event.target.value;
+  displayBookmarks();
+});
 
-    // get what users typed in the form
-    const title = document.getElementById("title").value;
-    const url = document.getElementById("url").value;
-    const description = document.getElementById("description").value;
-
-    // package it into a bookmark object
-    const newBookmark = {
-      title,
-      url,
-      description,
-      createdAt : new Date().toISOString(),
-    };
-        // Find out which user should get this bookmark
-  const currentUser = userSelect.value;
-
-  // get the user's existing data
-  const userData = getData(currentUser) || {};
-
-  // extract bookmarks (or use empty array if none exist)
-  const bookmarks = userData?.bookmarks || [];
+// Handle form submission
+form.addEventListener("submit", (event) => {
+  event.preventDefault();
   
-  //add the new bookmark
-  bookmarks.push(newBookmark);
-
-  // save updated data back to storage
-  userData.bookmarks = bookmarks;
-  setData(currentUser, userData);
-
-  //reset form
+  if (!currentUserId) {
+    alert("Please select a user first");
+    return;
+  }
+  
+  const newBookmark = {
+    url: urlInput.value,
+    title: titleInput.value,
+    description: descriptionInput.value,
+    createdAt: Date.now(),
+    likes: 0,
+  };
+  
+  // Get existing bookmarks (or start empty)
+  const existing = getData(currentUserId) || [];
+  
+  // Add the new bookmark and save
+  setData(currentUserId, [...existing, newBookmark]);
+  
+  // Reset the form and update the display
   form.reset();
-   // re-render bookmarks for this user
-   userSelect.dispatchEvent(new Event("change"));
-  });
-};
+  displayBookmarks();
+  
+  // Focus back on first input for keyboard users
+  titleInput.focus();
+});
+
+// Initialize
+loadUsers();
+displayBookmarks();

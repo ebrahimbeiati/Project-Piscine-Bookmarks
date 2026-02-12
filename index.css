@@ -1,33 +1,64 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
 /* Base layout styles */
 body {
   font-family: Arial, Helvetica, sans-serif;
   line-height: 1.5;
   max-width: 800px;
-  margin: 0 ;
+  margin: 0  ;
   padding: 1rem;
   background-color: #ffffff;
   color: #222;
 }
 
 /* Headings styles */
-h1, h2, h3 {
-  margin-top: 1.5rem;
-  margin-bottom: 0.5rem;
+h1 {
+  margin-bottom: 10px;
+  color: #2c3e50;
 }
 
+h2 {
+  margin: 30px 0 15px;
+  color: #34495e;
+}
+
+h3 {
+  margin: 0 0 8px;
+  font-size: 1.2em;
+}
+#userCount {
+  color: #2c3e50;
+  margin-bottom: 20px;
+}
 /* User selector  style*/
 label {
   display: block;
-  margin-top: 1rem;
-  margin-bottom: 0.25rem;
-  font-weight: bold;
+  margin-bottom: 5px;
+  font-weight: 600;
+  color: #2c3e50;
 }
 
-select {
-  padding: 0.4rem;
-  font-size: 1rem;
+select,
+input,
+textarea {
+  width: 100%;
+  padding: 10px;
+  margin-bottom: 15px;
+  border: 2px solid #ddd;
+  border-radius: 4px;
+  font-size: 16px;
+  font-family: inherit;
 }
-
+select:focus,
+input:focus,
+textarea:focus {
+  outline: none;
+  border-color: #3498db;
+  box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.1);
+}
 /* Bookmarks list styles */
 #bookmarks {
   margin-top: 1.5rem;
@@ -52,7 +83,7 @@ article a {
 
 article a:focus,
 article a:hover {
-  outline: 2px solid #0055aa;
+  outline: 2px solid #397bbc;
   outline-offset: 2px;
 }
 
@@ -63,12 +94,18 @@ button {
   padding: 0.4rem 0.75rem;
   font-size: 0.9rem;
   cursor: pointer;
+  background-color: #0b5ed7;
+  color: #ffffff;
+  border: none;
 }
-
-button:focus {
-  outline: 2px solid #000;
+button:hover {
+  background-color: #094db1;
+}
+button:focus-visible {
+  outline: 3px solid #000000;
   outline-offset: 2px;
 }
+
 
     /* Form  styles */
 form {
@@ -106,10 +143,10 @@ small {
   padding: 6px 12px;
   margin-top: 8px;
   background-color: #007bff;
-  color: white;
   border: none;
   border-radius: 4px;
   cursor: pointer;
+  
 }
 
 #bookmarkContainer button:hover {

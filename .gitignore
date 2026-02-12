@@ -1,0 +1,22 @@
+# Node modules
+node_modules/
+
+# Logs
+*.log
+
+# OS files
+.DS_Store
+
+# Build/output folders
+dist/
+build/
+
+# Jest coverage
+coverage/
+
+# Local editor settings
+.vscode/
+.idea/
+
+# Local test files that are not needed
+example.test.js

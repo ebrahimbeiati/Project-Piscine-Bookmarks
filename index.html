@@ -2,42 +2,57 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Shared Bookmarks</title>
     <link rel="stylesheet" href="index.css" />
   </head>
   <body>
-    <h1>Shared Bookmarks</h1>
-    <p id="userCount"></p>
+    <header>
+      <h1>Shared Bookmarks</h1>
+      <p id="userCount"></p>
+    </header>
 
-    <label for="users">Users</label>
-    <select id="users"></select>
+    <main>
+      <section aria-labelledby="userSelectLabel">
+        <label id="userSelectLabel" for="users">Users</label>
+        <select id="users"></select>
+      </section>
 
-    <section id="bookmarkContainer"></section>
+      <section id="bookmarkContainer" aria-live="polite" aria-label="Bookmarks"></section>
 
-    <h2>Add bookmark</h2>
-    <form id="bookmarkForm">
-      <div>
-        <label for="title">Title</label>
-        <input type="text" id="title" name="title" required />
-      </div>
+      <section aria-labelledby="addBookmarkLabel">
+        <h2 id="addBookmarkLabel">Add bookmark</h2>
+        <form id="bookmarkForm">
+          <div>
+            <label for="title">Title</label>
+            <input type="text" id="title" name="title" required />
+          </div>
 
-      <div>
-        <label for="url">URL</label>
-        <input type="url" id="url" name="url" required />
-      </div>
+          <div>
+            <label for="url">URL</label>
+            <input type="url" id="url" name="url" required />
+          </div>
 
-      <div>
-        <label for="description">Description</label>
-        <textarea
-          id="description"
-          name="description"
-          rows="3"
-          required
-        ></textarea>
-      </div>
+          <div>
+            <label for="description">Description</label>
+            <textarea
+              id="description"
+              name="description"
+              rows="3"
+              required
+            ></textarea>
+          </div>
 
-      <button type="submit">Add bookmark</button>
-    </form>
+          <button type="submit">Add bookmark</button>
+        </form>
+      </section>
+    </main>
+
+    <footer>
+      <!-- get current year -->
+
+<p> &copy; <script>document.write( new Date().getFullYear() );</script></p>    </footer>
+
     <script type="module" src="script.js"></script>
   </body>
 </html>
