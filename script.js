@@ -19,15 +19,10 @@ const userCount = document.getElementById("userCount");
 // KEY FOR STORING CURRENT USER
 const CURRENT_USER_KEY = "currentUserId";
 let currentUserId = null;
-
-// Save/ load current user to/ from localStorage
-function saveCurrentUser(userId) {
-  localStorage.setItem(CURRENT_USER_KEY, userId);
-}
-
-// Load current user from localStorage
-function loadCurrentUser() {
-  return localStorage.getItem(CURRENT_USER_KEY);
+//check URL 
+function isValidUrl(string) {
+  const pattern = /^(https?:\/\/)([\w-]+\.)+[\w-]+(\/[\w-.~:?#[\]@!$&'()*+,;=%]*)?$/i;
+  return pattern.test(string);
 }
 
 // Load users into the dropdown menu
@@ -151,10 +146,46 @@ form.addEventListener("submit", (event) => {
     return;
   }
   
+  const titleTrimmed = titleInput.value.trim();
+  const descriptionTrimmed = descriptionInput.value.trim();
+  const urlTrimmed = urlInput.value.trim();
+
+  
+  if (!isValidUrl(urlTrimmed)) {
+    alert("Please enter a valid URL");
+    urlInput.focus();
+    return;
+  }
+
+  // BLOCK if empty after trimming
+  if (!titleTrimmed) {
+    alert("Title cannot be empty or spaces only");
+    titleInput.focus();
+    return;
+  }
+
+  if (!descriptionTrimmed) {
+    alert("Description cannot be empty or spaces only");
+    descriptionInput.focus();
+    return;
+  }
+  // submit the form by pressing enter on the last input
+form.addEventListener("keydown", (e) => {
+  if (e.key === "Enter") {
+    const active = document.activeElement;
+    if (active.tagName !== "TEXTAREA") {
+    e.preventDefault();
+    form.requestSubmit(); 
+  }
+  }
+});
+
+
+
   const newBookmark = {
-    url: urlInput.value,
-    title: titleInput.value,
-    description: descriptionInput.value,
+    url: urlInput.value.trim(),
+    title: titleInput.value.trim(), 
+    description: descriptionInput.value.trim(),
     createdAt: Date.now(),
     likes: 0,
   };
