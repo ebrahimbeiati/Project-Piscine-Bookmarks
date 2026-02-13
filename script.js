@@ -10,12 +10,27 @@ const titleInput = document.getElementById("title");
 const descriptionInput = document.getElementById("description");
 const userCount = document.getElementById("userCount");
 
-// KEY FOR STORING CURRENT USER
-const CURRENT_USER_KEY = "currentUserId";
+
 let currentUserId = null;
-//check URL 
-
-
+//check URL validation
+function isValidUrl(string) {
+  try {
+    const url = new URL(string);
+    // Check if it has http or https protocol
+    if (url.protocol !== 'http:' && url.protocol !== 'https:') {
+      return false;
+    }
+    // Check if hostname has at least one dot (like example.com)
+    // This ensures it's a proper domain, not just "localhost" or single words
+    if (!url.hostname.includes('.') && url.hostname !== 'localhost') {
+      return false;
+    }
+    return true;
+  } catch (error) {
+    console.log("Invalid URL:", error.message);
+    return false;
+  }
+}
 // Load users into the dropdown menu
 function loadUsers() {
   const users = getUserIds();
@@ -137,19 +152,15 @@ form.addEventListener("submit", (event) => {
     return;
   }
   
-
   const titleTrimmed = titleInput.value.trim();
   const descriptionTrimmed = descriptionInput.value.trim();
   const urlTrimmed = urlInput.value.trim();
 
-
-
 if (!isValidUrl(urlTrimmed)) {
-  alert("Please enter a valid URL (must start with http:// or https://)");
+  alert("Please enter a valid URL (must start with http:// or https:// and hostname has at least one dot)");
   urlInput.focus();
   return;
 }
-
 
   // BLOCK if empty after trimming
   if (!titleTrimmed) {
@@ -163,6 +174,25 @@ if (!isValidUrl(urlTrimmed)) {
     descriptionInput.focus();
     return;
   }
+
+  const newBookmark = {
+    url: urlTrimmed,
+    title: titleTrimmed, 
+    description: descriptionTrimmed,
+    createdAt: Date.now(),
+    likes: 0,
+  };
+// Get existing bookmarks (or start empty)
+  const existing = getData(currentUserId) || [];
+  // Add the new bookmark and save
+  setData(currentUserId, [...existing, newBookmark]);
+
+  // Reset the form and update the display
+  form.reset();
+  displayBookmarks();
+  // Focus back on first input for keyboard users
+  titleInput.focus();
+});
   // submit the form by pressing enter on the last input
 form.addEventListener("keydown", (e) => {
   if (e.key === "Enter") {
@@ -172,30 +202,6 @@ form.addEventListener("keydown", (e) => {
     form.requestSubmit(); 
   }
   }
-});
-
-
-
-  const newBookmark = {
-    url: urlInput.value.trim(),
-    title: titleInput.value.trim(), 
-    description: descriptionInput.value.trim(),
-    createdAt: Date.now(),
-    likes: 0,
-  };
-  
-  // Get existing bookmarks (or start empty)
-  const existing = getData(currentUserId) || [];
-  
-  // Add the new bookmark and save
-  setData(currentUserId, [...existing, newBookmark]);
-  
-  // Reset the form and update the display
-  form.reset();
-  displayBookmarks();
-  
-  // Focus back on first input for keyboard users
-  titleInput.focus();
 });
 
 // Initialize
