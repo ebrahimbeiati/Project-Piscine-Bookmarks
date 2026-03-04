@@ -1,9 +1,9 @@
-import { incrementLikes, sortedByNewest } from './utils.js';
+import { incrementLikes, sortedByNewest } from "./utils.js";
 
-describe('incrementLikes', () => {
-  test('adds 1 to likes if likes exist, defaults to 1 if undefined, and does not mutate original', () => {
-    const bookmarkWithLikes = { title: 'HasLikes', likes: 2 };
-    const bookmarkWithoutLikes = { title: 'NoLikes' };
+describe("incrementLikes", () => {
+  test("adds 1 to likes if likes exist, defaults to 1 if undefined, and does not mutate original", () => {
+    const bookmarkWithLikes = { title: "HasLikes", likes: 2 };
+    const bookmarkWithoutLikes = { title: "NoLikes" };
 
     const updatedWithLikes = incrementLikes(bookmarkWithLikes);
     const updatedWithoutLikes = incrementLikes(bookmarkWithoutLikes);
@@ -13,15 +13,18 @@ describe('incrementLikes', () => {
     expect(bookmarkWithLikes.likes).toBe(2);
   });
 });
- 
-describe('sortedByNewest', () => {
-  test('sorts bookmarks from newest to oldest', () => {
+
+describe("sortedByNewest", () => {
+  test("sorts bookmarks from newest to oldest", () => {
+    //Creates three bookmarks with different timestamps.
+    // Uses getTime() to convert dates into numeric timestamps.
+    // The order is intentionally unsorted.
     const bookmarks = [
       { title: "Old Bookmark", createdAt: new Date("2024-01-01").getTime() },
       { title: "Newest Bookmark", createdAt: new Date("2024-03-15").getTime() },
-      { title: "Middle Bookmark", createdAt: new Date("2024-02-10").getTime() }
+      { title: "Middle Bookmark", createdAt: new Date("2024-02-10").getTime() },
     ];
-
+    //Calls the sorting function.
     const sorted = sortedByNewest(bookmarks);
 
     expect(sorted[0].title).toBe("Newest Bookmark");

@@ -1,5 +1,5 @@
 import { getUserIds, getData, setData } from "./storage.js";
-import { incrementLikes, sortedByNewest } from './utils.js';
+import { incrementLikes, sortedByNewest } from "./utils.js";
 
 // DOM elements
 const userSelect = document.getElementById("users");
@@ -10,31 +10,27 @@ const titleInput = document.getElementById("title");
 const descriptionInput = document.getElementById("description");
 const userCount = document.getElementById("userCount");
 
-
 let currentUserId = null;
 //check URL validation
 function isValidUrl(string) {
+
+  // Removed the hostname dot check — it was too restrictive
+  // and blocked valid URLs like http://localhost:3000.
+  // new URL() already throws on malformed URLs, so checking
+  // for http/https protocol is sufficient.
   try {
     const url = new URL(string);
-    // Check if it has http or https protocol
-    if (url.protocol !== 'http:' && url.protocol !== 'https:') {
-      return false;
-    }
-    // Check if hostname has at least one dot (like example.com)
-    // This ensures it's a proper domain, not just "localhost" or single words
-    if (!url.hostname.includes('.') && url.hostname !== 'localhost') {
-      return false;
-    }
-    return true;
-  } catch (error) {
-    console.log("Invalid URL:", error.message);
+    return url.protocol === "http:" || url.protocol === "https:";
+  } catch {
     return false;
   }
 }
+
 // Load users into the dropdown menu
 function loadUsers() {
+  // fetch user ids and clear dropdown
   const users = getUserIds();
-   userSelect.innerHTML = "";
+  userSelect.innerHTML = "";
 
   // Add default placeholder option first
   const defaultOption = document.createElement("option");
@@ -44,7 +40,7 @@ function loadUsers() {
   defaultOption.selected = true;
   userSelect.appendChild(defaultOption);
 
-  // Add user options
+  // Adds each user as an option.
   users.forEach((id) => {
     const option = document.createElement("option");
     option.value = id;
@@ -57,13 +53,18 @@ function loadUsers() {
 
   // Update user count
   userCount.textContent = `Total users: ${users.length}`;
-
 }
 // Display the bookmarks for the current user
 function displayBookmarks() {
+  // Clear previous bookmarks
   bookmarkSection.innerHTML = "";
+  // Without a selected user, currentUserId is null.
+  // Returning early prevents "No bookmarks yet for User null"
+  // from rendering on page load.
+  if (!currentUserId) return;
+  //Loads bookmarks for the selected user, or an empty array if there are none.
   const data = getData(currentUserId) || [];
-  
+
   // If there are no bookmarks, display a message
   if (data.length === 0) {
     const message = document.createElement("p");
@@ -73,12 +74,14 @@ function displayBookmarks() {
     bookmarkSection.appendChild(message);
     return;
   }
-  
+  //Sorts bookmarks newest → oldest.
   const sorted = sortedByNewest(data);
+
+  // Creates an article(container) for each bookmark
   sorted.forEach((bookmark, index) => {
     const article = document.createElement("article");
     article.className = "bookmark";
-    
+    //Creates a clickable title link.
     const title = document.createElement("h3");
     const label = document.createTextNode("Title: ");
     const link = document.createElement("a");
@@ -87,16 +90,15 @@ function displayBookmarks() {
     link.target = "_blank";
     link.rel = "noopener noreferrer";
     title.append(label, link);
-    
 
     const description = document.createElement("p");
-    
-    description.textContent =  "Description: " + bookmark.description;
-    
+
+    description.textContent = "Description: " + bookmark.description;
+
     const time = document.createElement("time");
     time.dateTime = new Date(bookmark.createdAt).toISOString();
     time.textContent = `Created: ${new Date(bookmark.createdAt).toLocaleString()}`;
-    
+
     // Copy button with accessible label
     const copyBtn = document.createElement("button");
     copyBtn.textContent = "Copy URL";
@@ -114,30 +116,42 @@ function displayBookmarks() {
         copyBtn.textContent = "Copy failed";
       }
     });
-    
-    // Like button with accessible label
+
+    // Like button with accessible label Increments likes.
+    // Saves updated data.
+    // Re-renders bookmarks.
     const likeBtn = document.createElement("button");
     likeBtn.type = "button";
     const likes = bookmark.likes || 0;
     likeBtn.textContent = `❤️ ${likes}`;
-    likeBtn.setAttribute("aria-label", `Like this bookmark. Current likes: ${likes}`);
+    likeBtn.setAttribute(
+      "aria-label",
+      `Like this bookmark. Current likes: ${likes}`,
+    );
     likeBtn.addEventListener("click", () => {
-      const updated = incrementLikes(bookmark);
-      data[index] = updated;
-      setData(currentUserId, data);
+      // sortedByNewest() reorders the array, so the forEach index
+      // no longer matches the original data array positions.
+      // Using createdAt as a unique identifier ensures we always
+      // update the correct bookmark regardless of sort order.
+
+      const updatedData = data.map((b) =>
+        b.id === bookmark.id ? incrementLikes(b) : b,
+      );
+
+      setData(currentUserId, updatedData);
       displayBookmarks();
     });
-    
+
     const buttonContainer = document.createElement("div");
     buttonContainer.className = "bookmark-actions";
     buttonContainer.append(copyBtn, likeBtn);
-    
+
     article.append(title, description, time, buttonContainer);
     bookmarkSection.append(article);
   });
 }
 
-// Handle user change event
+// Handle user change event. When user changes, update state and re-render.
 userSelect.addEventListener("change", (event) => {
   currentUserId = event.target.value;
   displayBookmarks();
@@ -145,22 +159,25 @@ userSelect.addEventListener("change", (event) => {
 
 // Handle form submission
 form.addEventListener("submit", (event) => {
+  //Prevents page reload.
   event.preventDefault();
-  
+
   if (!currentUserId) {
     alert("Please select a user first");
     return;
   }
-  
+
   const titleTrimmed = titleInput.value.trim();
   const descriptionTrimmed = descriptionInput.value.trim();
   const urlTrimmed = urlInput.value.trim();
 
-if (!isValidUrl(urlTrimmed)) {
-  alert("Please enter a valid URL (must start with http:// or https:// and hostname has at least one dot)");
-  urlInput.focus();
-  return;
-}
+  if (!isValidUrl(urlTrimmed)) {
+    alert(
+      "Please enter a valid URL (must start with http:// or https:// and hostname has at least one dot)",
+    );
+    urlInput.focus();
+    return;
+  }
 
   // BLOCK if empty after trimming
   if (!titleTrimmed) {
@@ -174,15 +191,19 @@ if (!isValidUrl(urlTrimmed)) {
     descriptionInput.focus();
     return;
   }
-
+  // Create new bookmark object
   const newBookmark = {
+    // For unique ID generation, we can use crypto.randomUUID() if available, otherwise fallback to a timestamp-based ID and random number.
+    id: crypto.randomUUID
+      ? crypto.randomUUID()
+      : `${Date.now()}-${Math.random()}`,
     url: urlTrimmed,
-    title: titleTrimmed, 
+    title: titleTrimmed,
     description: descriptionTrimmed,
     createdAt: Date.now(),
     likes: 0,
   };
-// Get existing bookmarks (or start empty)
+  // Get existing bookmarks (or start empty)
   const existing = getData(currentUserId) || [];
   // Add the new bookmark and save
   setData(currentUserId, [...existing, newBookmark]);
@@ -192,16 +213,6 @@ if (!isValidUrl(urlTrimmed)) {
   displayBookmarks();
   // Focus back on first input for keyboard users
   titleInput.focus();
-});
-  // submit the form by pressing enter on the last input
-form.addEventListener("keydown", (e) => {
-  if (e.key === "Enter") {
-    const active = document.activeElement;
-    if (active.tagName !== "TEXTAREA") {
-    e.preventDefault();
-    form.requestSubmit(); 
-  }
-  }
 });
 
 // Initialize
